@@ -11,4 +11,5 @@ if option == 'Check Transaction':
         file_input = st.file_uploader("Upload File",type=['xlsx'])
         if file_input:
             # st.write(str(type(file_input)))
-            pd.read_excel(file_input, None)
+            df2 = pd.read_excel(file_input,'MOMO',usecols="A,B,F",dtype=str).astype(str)
+            st.table(df2)
