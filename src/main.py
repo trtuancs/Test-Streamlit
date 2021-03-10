@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 from result import *
+from check_transaction import *
+from config import *
 
 
 st.title('Wellcome to CHECK TOOL')
@@ -13,5 +15,13 @@ if option == 'Check Transaction':
     if file_input is not None:
         if st.button('Begin checking'):
             st.text("We are checking month_key: {}".format(month_key))
-            df2 = pd.read_excel(file_input,'MOMO',usecols="A,B,F",dtype=str).astype(str)
-            st.markdown(get_table_download_link(df2,'result','result'), unsafe_allow_html=True)
+            config = Config('Staging')
+            conn = ConnDB(config)
+            df = preprocessing(file_input)
+            save_csv_local(df,month_key)
+            delete_old_data(conn)
+            insert_data(conn,month_key)
+            not_glx_df = doi_soat_congthanhtoan_glxp(conn,month_key)
+            not_gateway = doi_soat_glxp_congthanhtoan(conn,month_key)
+            st.markdown(get_table_download_link(not_glx_df,'not_glx','Transaction has at payment gateway - not at glx'), unsafe_allow_html=True)
+            st.markdown(get_table_download_link(not_gateway,'not_gateway','Transaction has at glx - not at gateway'), unsafe_allow_html=True)
