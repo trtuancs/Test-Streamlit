@@ -14,4 +14,4 @@ if option == 'Check Transaction':
         if st.button('Begin checking'):
             st.text("We are checking month_key: {}".format(month_key))
             df2 = pd.read_excel(file_input,'MOMO',usecols="A,B,F",dtype=str).astype(str)
-            st.markdown(get_table_download_link(df2), unsafe_allow_html=True)
+            st.markdown(get_table_download_link(df2,'result','result'), unsafe_allow_html=True)
