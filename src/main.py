@@ -19,7 +19,9 @@ def get_table_download_link(df):
     """
     val = to_excel(df)
     b64 = base64.b64encode(val)  # val looks like b'...'
-    return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="extract.xlsx"> {}</a>'.format('test') # decode b'abc' => abc
+    name = 'check'
+    description = 'check des'
+    return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="{name}.xlsx"> {description}</a>' # decode b'abc' => abc
 
 
 
