@@ -11,6 +11,6 @@ if option == 'Check Transaction':
     # st.button('Add file transaction to check')
     file_input = st.file_uploader("Upload File Transaction",type=['xlsx'])
     if file_input is not None:
-        st.write("OK---------------------------")
+        st.write("OK--------------------------- {}".format(month_key))
         df2 = pd.read_excel(file_input,'MOMO',usecols="A,B,F",dtype=str).astype(str)
         st.table(df2)
