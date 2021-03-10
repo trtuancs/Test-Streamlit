@@ -10,5 +10,5 @@ class Config:
         self.db_id = DB_id
     
     def get_config(self):
-        if self.db_id = 'Staging':
+        if self.db_id == 'Staging':
             return StagingDB
