@@ -8,7 +8,7 @@ option = st.selectbox("Please select your option: ",
 if option == 'Check Transaction':
     st.subheader("======= You are using Check Transaction Function =======")
     month_key = st.number_input("Enter month_key") 
-    st.button('Add file transaction to check'):
+    st.button('Add file transaction to check')
     file_input = st.file_uploader("Upload File",type=['xlsx'])
     if file_input is not None:
         st.write("OK---------------------------")
