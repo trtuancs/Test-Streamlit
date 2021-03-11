@@ -3,6 +3,7 @@ import csv
 import psycopg2
 import pandas as pd
 from config import *
+import os
 
 
 class ConnDB:
@@ -78,7 +79,12 @@ class FileInputProcessor:
         return df
 
     def save_csv_local(self, dataframe: pd.DataFrame):
-        dataframe.to_csv(f"{trans_path}_{self.month_key}.csv", index=False, header=True)
+        path = os.getcwd()
+        dataframe.to_csv(f"{path}/{self.month_key}.csv", index=False, header=True)
+
+    def clean_local(self):
+        path = os.getcwd()
+        os.remove(f"{path}/{self.month_key}.csv")
 
 
 class DBProcessor:
@@ -95,8 +101,9 @@ class DBProcessor:
         conn.commit()
 
     def __insert_data(self, conn):
+        path = os.getcwd()
         cur = conn.cursor()
-        with open(f"{trans_path}_{self.month_key}.csv", 'r') as f:
+        with open(f"{path}/{self.month_key}.csv", 'r') as f:
             reader = csv.reader(f)
             next(reader)
             cur.copy_from(f, "hd1report_db.data_congthanhtoan",

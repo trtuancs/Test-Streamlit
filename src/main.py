@@ -24,3 +24,6 @@ if option == 'Check Transaction':
             st.write("Click below link to download: ")
             not_pay_gate_link = CreateDownload(not_pay_gate, "not_in_pay_gate", "Transaction not in payment gate").process()
             not_glx_link = CreateDownload(not_glx, "not_in_glx", "Transaction not in Galaxy").process()
+            st.markdown(not_pay_gate_link, unsafe_allow_html=True)
+            st.markdown(not_glx_link, unsafe_allow_html=True)
+            PreProcess.clean_local()
