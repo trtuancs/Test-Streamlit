@@ -79,7 +79,7 @@ def preprocessing(file: pd.io.excel._base.ExcelFile)-> pd.DataFrame:
         df5 = df4
         print(payment_type,' missed.')
     
-    df5 = df5.loc[:,cols_lst]
+    # df5 = df5.loc[:,cols_lst]
     return df5
 
 def save_csv_local(dataframe: pd.DataFrame,month_key):
