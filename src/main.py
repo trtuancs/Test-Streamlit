@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from result import *
+from create_download import *
 from check_transaction import *
 from config import *
 
@@ -17,7 +17,7 @@ if option == 'Check Transaction':
             st.text("We are checking month_key: {}".format(month_key))
             config = Config('Staging')
             conn = ConnDB(config)
-            df = preprocessing(file_input)
+            df = Processor(file_input,month_key,payment_type)
             st.write(df)
             # save_csv_local(df,month_key)
             # delete_old_data(conn)

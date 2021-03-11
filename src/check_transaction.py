@@ -1,10 +1,11 @@
 from sqlalchemy import create_engine
+import streamlit as st
 import csv
 import psycopg2
 import pandas as pd
 import os
+from config import *
 
-cols_lst = ['month_key','payment_type','ma_giao_dich','ngay_giao_dich','merchant_ref','status']
 class ConnDB:
     def __init__(self,Config):
         self.Config = Config
@@ -15,72 +16,61 @@ class ConnDB:
                                host = self.Config.HOST,
                                port = self.Config.PORT,
                                database = self.Config.DB)
-            print("Create Connect is success")
+            st.success("Create Connect is success")
         except:
-            raise Exception('Could not create connect to DB')
+            st.error(‘Could not create connect to DB’)
         return conn
 
-def preprocessing(file: pd.io.excel._base.ExcelFile)-> pd.DataFrame:
-    try:
-        payment_type = 'CCSTRIPE'
-        df1 = pd.read_excel(file, 'CCSTRIPE',usecols="A,B",dtype=str).astype(str)
-        df1['month_key'] = month_key
-        df1['payment_type'] = payment_type
-        df1['merchant_ref'] = None
-        df1['status'] = None
-    except:
-        df1 = []
-        print(payment_type,' missed.')
+class Processor:
+    def __init__(self,file,month_key,pay_lst):
+        self.file = file
+        self.pay_lst = pay_lst
+        self.month_key = month_key
     
-    try:
-        payment_type = 'MOMO'
-        df2 = pd.read_excel(file,'MOMO',usecols="A,B,F",dtype=str).astype(str)
-        df2['month_key'] = month_key
-        df2['payment_type'] = payment_type
-        df2['merchant_ref'] = None
-        df2 = df2.rename(columns = {'Trạng thái':'status'})
-        df2 = df2.append(df1)
-    except:
-        df2 = df1
-        print(payment_type,' missed.')
+    def process(self):
+        result = pd.DataFrame()
+        for pay in pay_lst:
+            if pay == 'MOMO':
+                df = self.__momo(pay)
+            elif pay == 'GOOGLE':
+                df = self.__google(pay)
+            elif pay =='VNPAY':
+                df = self.__vnpay(pay)
+            elif pay == 'ASIAPAY':
+                df = self.__asiapay(pay)
+            result.append(df)
+        return result[cols_lst]
 
-    try:
-        payment_type = 'GOOGLE'
-        df3 = pd.read_excel(file,'GOOGLE',usecols="A,B,D",dtype=str).astype(str)
-        df3['month_key'] = month_key
-        df3['payment_type'] = payment_type
-        df3['merchant_ref'] = None
-        df3 = df3.rename(columns = {'Financial Status':'status'})
-        df3 = df3.append(df2)
-    except:
-        df3 = df2
-        print(payment_type,' missed.')
-
-    try:
-        payment_type = 'VNPAY'
-        df4 = pd.read_excel(file,'VNPAY', usecols="A,B,K",dtype=str).astype(str)
-        df4['month_key'] = month_key
-        df4['payment_type'] = payment_type
-        df4['merchant_ref'] = None
-        df4 = df4.rename(columns = {'Trạng thái':'status'})
-        df4 = df4.append(df3)
-    except:
-        df4 = df3
-        print(payment_type,' missed.')
-
-    try:
-        payment_type = 'ASIAPAY'
-        df5 = pd.read_excel(file,'ASIAPAY', usecols="A,B,G,Q",dtype=str).astype(str)
-        df5['month_key'] = month_key
-        df5['payment_type'] = payment_type
-        df5 = df5.rename(columns={'Merchant Ref.':'merchant_ref','Status':'status'})
-        df5 = df5.append(df4)
-    except:
-        df5 = df4
-        print(payment_type,' missed.')
+    def __momo(self,name):
+        df = pd.read_excel(self.file,name,usecols=momo,dtype=str).astype(str)
+        df['month_key'] = self.month_key
+        df['payment_type'] = name
+        df['merchant_ref'] = None
+        df = df.rename(columns = {'Trạng thái':'status'})
+        return df
     
-    # df5 = df5.loc[:,cols_lst]
-    return df5
+    def __google(self,name):
+        df = pd.read_excel(self.file,name,usecols=google,dtype=str).astype(str)
+        df['month_key'] = self.month_key
+        df['payment_type'] = name
+        df['merchant_ref'] = None
+        df = df.rename(columns = {'Financial Status':'status'})
+        return df
+    
+    def __vnpay(self,name):
+        df = pd.read_excel(self.file,name, usecols=vnpay,dtype=str).astype(str)
+        df['month_key'] = self.month_key
+        df['payment_type'] = name
+        df['merchant_ref'] = None
+        df = df.rename(columns = {'Trạng thái':'status'})
+        return df
+
+    def __asiapay(self,name):
+        df = pd.read_excel(self.file,name, usecols=asiapay,dtype=str).astype(str)
+        df['month_key'] = self.month_key
+        df['payment_type'] = name
+        df = df.rename(columns={'Merchant Ref.':'merchant_ref','Status':'status'})
+        return df
 
 def save_csv_local(dataframe: pd.DataFrame,month_key):
     dataframe.to_csv(f"file/data_check_transaction_{month_key}.csv",index = False, header=True)

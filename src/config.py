@@ -1,3 +1,11 @@
+cols_lst = ['month_key','payment_type','ma_giao_dich','ngay_giao_dich','merchant_ref','status']
+payment_type = ['MOMO','GOOGLE','VNPAY','ASIAPAY']
+momo = "A,B,F"
+google = "A,B,D"
+vnpay = "A,B,K"
+asiapay = "A,B,G,Q"
+
+
 class StagingDB:
     USER = 'report'
     PW = 'mCVMtqJ6tfn5cHfQYz'
