@@ -17,7 +17,7 @@ if option == 'Check Transaction':
             PreProcess = FileInputProcessor(file_input, month_key, payment_type)
             df = PreProcess.process()
             PreProcess.save_csv_local(df)
-            DBProcessor(conn, month_key).process()
+            DBProcessor(month_key).process(conn)
             Check = CheckTransactionProcessor(conn, month_key)
             not_pay_gate = Check.check_not_pay_gate()
             not_glx = Check.check_not_glx()

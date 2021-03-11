@@ -82,22 +82,19 @@ class FileInputProcessor:
 
 
 class DBProcessor:
-    def __init__(self, conn, month_key):
-        self.conn = conn
+    def __init__(self, month_key):
         self.month_key = month_key
 
-    def process(self):
-        self.__delete_old_data()
-        self.__insert_data()
+    def process(self, conn):
+        self.__delete_old_data(conn)
+        self.__insert_data(conn)
 
-    def __delete_old_data(self):
-        conn = self.conn
+    def __delete_old_data(self, conn):
         cur = conn.cursor()
         cur.execute(f"DELETE FROM hd1report_db.data_congthanhtoan WHERE month_key={self.month_key}")
         self.conn.commit()
 
-    def __insert_data(self):
-        conn = self.conn
+    def __insert_data(self, conn):
         cur = conn.cursor()
         with open(f"{trans_path}_{self.month_key}.csv", 'r') as f:
             reader = csv.reader(f)
@@ -106,7 +103,7 @@ class DBProcessor:
                           columns=(
                               'month_key', 'payment_type', 'ma_giao_dich', 'ngay_giao_dich', 'merchant_ref', 'status'),
                           sep=",")
-        self.conn.commit()
+        conn.commit()
 
 
 class CheckTransactionProcessor:
