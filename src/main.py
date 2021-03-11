@@ -17,6 +17,7 @@ if option == 'Check Transaction':
             st.text("We are checking month_key: {}".format(month_key))
             config = Config('Staging')
             conn = ConnDB(config)
+            st.text("Xong conn")
             df = Processor(file_input,month_key,payment_type)
             # st.write(df)
             # save_csv_local(df,month_key)
