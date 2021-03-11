@@ -16,7 +16,6 @@ class ConnDB:
                                host = self.Config.HOST,
                                port = self.Config.PORT,
                                database = self.Config.DB)
-            st.success("Create Connect is success")
         except:
             st.error("Could not create connect to DB")
         return conn
