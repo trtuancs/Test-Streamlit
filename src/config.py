@@ -1,5 +1,5 @@
-cols_lst = ['month_key','payment_type','ma_giao_dich','ngay_giao_dich','merchant_ref','status']
-payment_type = ['MOMO','GOOGLE','VNPAY','ASIAPAY']
+cols_lst = ['month_key', 'payment_type', 'ma_giao_dich', 'ngay_giao_dich', 'merchant_ref', 'status']
+payment_type = ['MOMO', 'GOOGLE', 'VNPAY', 'ASIAPAY']
 momo = "A,B,F"
 google = "A,B,D"
 vnpay = "A,B,K"
@@ -13,10 +13,11 @@ class StagingDB:
     PORT = '5432'
     DB = 'report'
 
+
 class Config:
-    def __init__(self,DB_id):
+    def __init__(self, DB_id):
         self.db_id = DB_id
-    
+
     def get_config(self):
         if self.db_id == 'Staging':
             return StagingDB
