@@ -18,7 +18,7 @@ if option == 'Check Transaction':
             config = Config('Staging')
             conn = ConnDB(config)
             df = Processor(file_input,month_key,payment_type)
-            st.write(df)
+            # st.write(df)
             # save_csv_local(df,month_key)
             # delete_old_data(conn)
             # insert_data(conn,month_key)
