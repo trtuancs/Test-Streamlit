@@ -13,7 +13,7 @@ if option == 'Check Transaction':
         if st.button('Begin checking'):
             st.text("We are checking month_key: {}".format(month_key))
             config = Config('Staging')
-            conn = ConnDB(config)
+            conn = ConnDB(config).create_conn()
             PreProcess = FileInputProcessor(file_input, month_key, payment_type)
             df = PreProcess.process()
             PreProcess.save_csv_local(df)
