@@ -18,7 +18,7 @@ class ConnDB:
                                database = self.Config.DB)
             st.success("Create Connect is success")
         except:
-            st.error(‘Could not create connect to DB’)
+            st.error("Could not create connect to DB")
         return conn
 
 class Processor:
