@@ -2,7 +2,7 @@ from create_download import *
 from check_transaction import *
 from config import *
 
-st.title('Wellcome to CHECK TOOL')
+st.title('Welcome to CHECK TOOL')
 option = st.selectbox("Please select your option: ",
                       ['Check Transaction', 'Check VMG'])
 if option == 'Check Transaction':
