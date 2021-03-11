@@ -125,7 +125,7 @@ class CheckTransactionProcessor:
         result = cur.fetchall()
         df = pd.DataFrame(result, columns=trans_not_pay_gate_cols)
         self.conn.commit()
-        return df
+        return df.set_index('month_key')
 
     def check_not_glx(self):
         conn = self.conn
@@ -134,4 +134,4 @@ class CheckTransactionProcessor:
         result = cur.fetchall()
         df = pd.DataFrame(result, columns=trans_not_glx_cols)
         self.conn.commit()
-        return df
+        return df.set_index('month_key')
