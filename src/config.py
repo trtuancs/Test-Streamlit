@@ -6,7 +6,7 @@ vnpay = "A,B,K"
 asiapay = "A,B,G,Q"
 trans_not_pay_gate_cols = ['month_key', 'transaction_id', 'origin_subscription_id', 'payment_type', 'plan_id',
                            'title_name', 'paid_price', 'payment_charge_id', 'partner_trans_id', 'create_at',
-                           'recheck', 'merchant_ref']
+                           'ket_qua_doi_soat', 'merchant_ref', 'active_type']
 trans_not_glx_cols = ['month_key', 'ma_giao_dich', 'payment_type', 'ket_qua_doi_soat', 'chi_tiet',
                       'merchant_ref', 'transaction_id_glx', 'created_at_glxp', 'created_at_ctt']
 trans_path = "file/data_check_transaction"
