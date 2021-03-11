@@ -30,12 +30,16 @@ class Processor:
         result = pd.DataFrame()
         for pay in pay_lst:
             if pay == 'MOMO':
+                st.write("Vao ",pay)
                 df = self.momo(pay)
             elif pay == 'GOOGLE':
+                st.write("Vao ",pay)
                 df = self.google(pay)
             elif pay =='VNPAY':
+                st.write("Vao ",pay)
                 df = self.vnpay(pay)
             elif pay == 'ASIAPAY':
+                st.write("Vao ",pay)
                 df = self.asiapay(pay)
             result = result.append(df)
         return result[cols_lst]
