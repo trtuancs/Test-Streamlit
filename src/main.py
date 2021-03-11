@@ -1,5 +1,3 @@
-import streamlit as st
-import pandas as pd
 from create_download import *
 from check_transaction import *
 from config import *
@@ -16,14 +14,13 @@ if option == 'Check Transaction':
             st.text("We are checking month_key: {}".format(month_key))
             config = Config('Staging')
             conn = ConnDB(config)
-            # st.text("Xong conn")
-            df = Processor(file_input, month_key, payment_type).process()
-            # df = pd.read_excel(file_input,'GOOGLE',usecols=google,dtype=str).astype(str)
-            st.write(df)
-            # save_csv_local(df,month_key)
-            # delete_old_data(conn)
-            # insert_data(conn,month_key)
-            # not_glx_df = doi_soat_congthanhtoan_glxp(conn,month_key)
-            # not_gateway = doi_soat_glxp_congthanhtoan(conn,month_key)
-            # st.markdown(get_table_download_link(not_glx_df,'not_glx','Transaction has at payment gateway - not at glx'), unsafe_allow_html=True)
-            # st.markdown(get_table_download_link(not_gateway,'not_gateway','Transaction has at glx - not at gateway'), unsafe_allow_html=True)
+            PreProcess = FileInputProcessor(file_input, month_key, payment_type)
+            df = PreProcess.process()
+            PreProcess.save_csv_local(df)
+            DBProcessor(conn, month_key).process()
+            Check = CheckTransactionProcessor(conn, month_key)
+            not_pay_gate = Check.check_not_pay_gate()
+            not_glx = Check.check_not_glx()
+            st.write("Result: ")
+            not_pay_gate_link = CreateDownload(not_pay_gate, 'not_in_pay_gate', 'Transaction not in payment gate')
+            not_glx_link = CreateDownload(not_glx, 'not_in_glx', 'Transaction not in Galaxy')

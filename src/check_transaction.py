@@ -1,9 +1,7 @@
-from sqlalchemy import create_engine
 import streamlit as st
 import csv
 import psycopg2
 import pandas as pd
-import os
 from config import *
 
 
@@ -23,7 +21,8 @@ class ConnDB:
         return conn
 
 
-class Processor:
+class FileInputProcessor:
+
     def __init__(self, file, month_key, pay_lst):
         self.file = file
         self.pay_lst = pay_lst
@@ -33,111 +32,98 @@ class Processor:
         result = pd.DataFrame()
         for pay in self.pay_lst:
             if pay == 'MOMO':
-                st.write("Vao ", pay)
-                df = self.momo(pay)
+                df = self.__momo(pay)
             elif pay == 'GOOGLE':
-                st.write("Vao ", pay)
-                df = self.google(pay)
+                df = self.__google(pay)
             elif pay == 'VNPAY':
-                st.write("Vao ", pay)
-                df = self.vnpay(pay)
+                df = self.__vnpay(pay)
             elif pay == 'ASIAPAY':
-                st.write("Vao ", pay)
-                df = self.asiapay(pay)
+                df = self.__asiapay(pay)
             result = result.append(df)
         return result[cols_lst]
 
-    def momo(self, name):
-        df = pd.read_excel(self.file, name, usecols=momo, dtype=str).astype(str)
+    def __momo(self, name):
+        df = self.__read_item(name, momo)
         df['month_key'] = self.month_key
         df['payment_type'] = name
         df['merchant_ref'] = None
         df = df.rename(columns={'Trạng thái': 'status'})
         return df
 
-    def google(self, name):
-        df = pd.read_excel(self.file, name, usecols=google, dtype=str).astype(str)
+    def __google(self, name):
+        df = self.__read_item(name, google)
         df['month_key'] = self.month_key
         df['payment_type'] = name
         df['merchant_ref'] = None
         df = df.rename(columns={'Financial Status': 'status'})
         return df
 
-    def vnpay(self, name):
-        df = pd.read_excel(self.file, name, usecols=vnpay, dtype=str).astype(str)
+    def __vnpay(self, name):
+        df = self.__read_item(name, vnpay)
         df['month_key'] = self.month_key
         df['payment_type'] = name
         df['merchant_ref'] = None
         df = df.rename(columns={'Trạng thái': 'status'})
         return df
 
-    def asiapay(self, name):
-        df = pd.read_excel(self.file, name, usecols=asiapay, dtype=str).astype(str)
+    def __asiapay(self, name):
+        df = self.__read_item(name, asiapay)
         df['month_key'] = self.month_key
         df['payment_type'] = name
         df = df.rename(columns={'Merchant Ref.': 'merchant_ref', 'Status': 'status'})
         return df
 
+    def __read_item(self, name, cols: str):
+        df = pd.read_excel(self.file, name, usecols=cols, dtype=str).astype(str)
+        return df
 
-def save_csv_local(dataframe: pd.DataFrame, month_key):
-    dataframe.to_csv(f"file/data_check_transaction_{month_key}.csv", index=False, header=True)
-
-
-def delete_old_data(conn):
-    cur = conn.cursor()
-    cur.execute(f"DELETE FROM hd1report_db.data_congthanhtoan WHERE month_key={month_key}")
-    conn.commit()
+    def save_csv_local(self, dataframe: pd.DataFrame):
+        dataframe.to_csv(f"{trans_path}_{self.month_key}.csv", index=False, header=True)
 
 
-def insert_data(conn, month_key):
-    # insert data den doi soat
-    cur = conn.cursor()
-    with open(f"file/data_check_transaction_{month_key}.csv", 'r') as f:
-        reader = csv.reader(f)
-        next(reader)  # Skip the header row.
-        cur.copy_from(f, "hd1report_db.data_congthanhtoan",
-                      columns=('month_key', 'payment_type', 'ma_giao_dich', 'ngay_giao_dich', 'merchant_ref', 'status'),
-                      sep=",")
-        print('Data inserted.')
-    conn.commit()
+class DBProcessor:
+    def __init__(self, conn, month_key):
+        self.conn = conn
+        self.month_key = month_key
+
+    def process(self):
+        self.__delete_old_data()
+        self.__insert_data()
+
+    def __delete_old_data(self):
+        cur = self.conn.cursor()
+        cur.execute(f"DELETE FROM hd1report_db.data_congthanhtoan WHERE month_key={self.month_key}")
+        self.conn.commit()
+
+    def __insert_data(self):
+        cur = self.conn.cursor()
+        with open(f"{trans_path}_{self.month_key}.csv", 'r') as f:
+            reader = csv.reader(f)
+            next(reader)
+            cur.copy_from(f, "hd1report_db.data_congthanhtoan",
+                          columns=(
+                              'month_key', 'payment_type', 'ma_giao_dich', 'ngay_giao_dich', 'merchant_ref', 'status'),
+                          sep=",")
+        self.conn.commit()
 
 
-def convert_to_csv_congthanhtoan_glxp(data):
-    df = pd.DataFrame(data, columns=['month_key', 'ma_giao_dich', 'payment_type', 'ket_qua_doi_soat', 'chi_tiet',
-                                     'merchant_ref', 'transaction_id_glx', 'created_at_glxp', 'created_at_ctt'])
-    return df
+class CheckTransactionProcessor:
+    def __init__(self, conn, month_key):
+        self.conn = conn
+        self.month_key = month_key
 
+    def check_not_pay_gate(self):
+        cur = self.conn.cursor()
+        cur.execute(f"SELECT * FROM public.doi_soat_transaction_not_exist_in_payment_data_monthly({self.month_key})")
+        result = cur.fetchall()
+        df = pd.DataFrame(result, columns=trans_not_pay_gate_cols)
+        self.conn.commit()
+        return df
 
-def doi_soat_congthanhtoan_glxp(conn, month_key):
-    # run ham chay doi soat
-    print('Bat dau doi soat...')
-    cur1 = conn.cursor()
-    cur1.execute(f"SELECT * FROM public.doi_soat_glx_transaction_monthly({month_key})")
-    columns = [i[0] for i in cur1.description]
-    result_doisoat = cur1.fetchall()
-    df = convert_to_csv_congthanhtoan_glxp(result_doisoat)
-    print("1. Doi soat xong phan data co o cong thanh toan nhung ko co o GLXP")
-    print("Doi soat xong 1 chieu.")
-    conn.commit()
-    return df
-
-
-def convert_to_csv_glxp_congthanhtoan(data):
-    df = pd.DataFrame(data, columns=['month_key', 'transaction_id', 'origin_subscription_id', 'payment_type', 'plan_id',
-                                     'title_name', 'paid_price', 'payment_charge_id', 'partner_trans_id', 'create_at',
-                                     'recheck', 'merchant_ref'])
-    return df
-
-
-# giao dich co o GLXP nhung ko co o cong thanh toan.
-def doi_soat_glxp_congthanhtoan(conn, month_key):
-    cur = conn.cursor()
-    cur.execute(f"SELECT * FROM public.doi_soat_transaction_not_exist_in_payment_data_monthly({month_key})")
-    columns = [i[0] for i in cur.description]
-    result_doisoat = cur.fetchall()
-    df = convert_to_csv_glxp_congthanhtoan(result_doisoat)
-    print("2. Doi soat xong phan data co trong GLXP nhung ko co trong data cong thanh toan.")
-    print("Doi soat xong chieu nguoc lai.")
-    print("Hoan thanh Doi soat !")
-    conn.commit()
-    return df
+    def check_not_glx(self):
+        cur1 = self.conn.cursor()
+        cur1.execute(f"SELECT * FROM public.doi_soat_glx_transaction_monthly({self.month_key})")
+        result = cur1.fetchall()
+        df = pd.DataFrame(result, columns=trans_not_glx_cols)
+        self.conn.commit()
+        return df
