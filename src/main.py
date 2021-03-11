@@ -12,7 +12,7 @@ if option == 'Check Transaction':
     if file_input is not None:
         if st.button('Begin checking'):
             st.text("We are checking month_key: {}".format(month_key))
-            config = Config('Staging')
+            config = Config('Staging').get_config()
             conn = ConnDB(config).create_conn()
             PreProcess = FileInputProcessor(file_input, month_key, payment_type)
             df = PreProcess.process()
