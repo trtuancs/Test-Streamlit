@@ -30,17 +30,17 @@ class Processor:
         result = pd.DataFrame()
         for pay in pay_lst:
             if pay == 'MOMO':
-                df = self.__momo(pay)
+                df = self.momo(pay)
             elif pay == 'GOOGLE':
-                df = self.__google(pay)
+                df = self.google(pay)
             elif pay =='VNPAY':
-                df = self.__vnpay(pay)
+                df = self.vnpay(pay)
             elif pay == 'ASIAPAY':
-                df = self.__asiapay(pay)
+                df = self.asiapay(pay)
             result = result.append(df)
         return result[cols_lst]
 
-    def __momo(self,name):
+    def momo(self,name):
         df = pd.read_excel(self.file,name,usecols=momo,dtype=str).astype(str)
         df['month_key'] = self.month_key
         df['payment_type'] = name
@@ -48,7 +48,7 @@ class Processor:
         df = df.rename(columns = {'Trạng thái':'status'})
         return df
     
-    def __google(self,name):
+    def google(self,name):
         df = pd.read_excel(self.file,name,usecols=google,dtype=str).astype(str)
         df['month_key'] = self.month_key
         df['payment_type'] = name
@@ -56,7 +56,7 @@ class Processor:
         df = df.rename(columns = {'Financial Status':'status'})
         return df
     
-    def __vnpay(self,name):
+    def vnpay(self,name):
         df = pd.read_excel(self.file,name, usecols=vnpay,dtype=str).astype(str)
         df['month_key'] = self.month_key
         df['payment_type'] = name
@@ -64,7 +64,7 @@ class Processor:
         df = df.rename(columns = {'Trạng thái':'status'})
         return df
 
-    def __asiapay(self,name):
+    def asiapay(self,name):
         df = pd.read_excel(self.file,name, usecols=asiapay,dtype=str).astype(str)
         df['month_key'] = self.month_key
         df['payment_type'] = name
