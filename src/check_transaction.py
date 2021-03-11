@@ -92,7 +92,7 @@ class DBProcessor:
     def __delete_old_data(self, conn):
         cur = conn.cursor()
         cur.execute(f"DELETE FROM hd1report_db.data_congthanhtoan WHERE month_key={self.month_key}")
-        self.conn.commit()
+        conn.commit()
 
     def __insert_data(self, conn):
         cur = conn.cursor()
