@@ -22,5 +22,5 @@ if option == 'Check Transaction':
             not_pay_gate = Check.check_not_pay_gate()
             not_glx = Check.check_not_glx()
             st.write("Click below link to download: ")
-            not_pay_gate_link = CreateDownload(not_pay_gate, 'not_in_pay_gate', 'Transaction not in payment gate').process()
-            not_glx_link = CreateDownload(not_glx, 'not_in_glx', 'Transaction not in Galaxy').process()
+            not_pay_gate_link = CreateDownload(not_pay_gate, "not_in_pay_gate", "Transaction not in payment gate").process()
+            not_glx_link = CreateDownload(not_glx, "not_in_glx", "Transaction not in Galaxy").process()
