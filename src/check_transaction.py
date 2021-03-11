@@ -37,7 +37,7 @@ class Processor:
                 df = self.__vnpay(pay)
             elif pay == 'ASIAPAY':
                 df = self.__asiapay(pay)
-            result.append(df)
+            result = result.append(df)
         return result[cols_lst]
 
     def __momo(self,name):
