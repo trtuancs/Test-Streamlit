@@ -91,12 +91,14 @@ class DBProcessor:
         self.__insert_data()
 
     def __delete_old_data(self):
-        cur = self.conn.cursor()
+        conn = self.conn
+        cur = conn.cursor()
         cur.execute(f"DELETE FROM hd1report_db.data_congthanhtoan WHERE month_key={self.month_key}")
         self.conn.commit()
 
     def __insert_data(self):
-        cur = self.conn.cursor()
+        conn = self.conn
+        cur = conn.cursor()
         with open(f"{trans_path}_{self.month_key}.csv", 'r') as f:
             reader = csv.reader(f)
             next(reader)
@@ -113,7 +115,8 @@ class CheckTransactionProcessor:
         self.month_key = month_key
 
     def check_not_pay_gate(self):
-        cur = self.conn.cursor()
+        conn = self.conn
+        cur = conn.cursor()
         cur.execute(f"SELECT * FROM public.doi_soat_transaction_not_exist_in_payment_data_monthly({self.month_key})")
         result = cur.fetchall()
         df = pd.DataFrame(result, columns=trans_not_pay_gate_cols)
@@ -121,9 +124,10 @@ class CheckTransactionProcessor:
         return df
 
     def check_not_glx(self):
-        cur1 = self.conn.cursor()
-        cur1.execute(f"SELECT * FROM public.doi_soat_glx_transaction_monthly({self.month_key})")
-        result = cur1.fetchall()
+        conn = self.conn
+        cur = conn.cursor()
+        cur.execute(f"SELECT * FROM public.doi_soat_glx_transaction_monthly({self.month_key})")
+        result = cur.fetchall()
         df = pd.DataFrame(result, columns=trans_not_glx_cols)
         self.conn.commit()
         return df
