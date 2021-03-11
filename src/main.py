@@ -18,7 +18,7 @@ if option == 'Check Transaction':
             config = Config('Staging')
             conn = ConnDB(config)
             # st.text("Xong conn")
-            df = Processor(file_input,month_key,payment_type)
+            df = Processor(file_input,month_key,payment_type).process()
             # df = pd.read_excel(file_input,'GOOGLE',usecols=google,dtype=str).astype(str)
             st.write(df)
             # save_csv_local(df,month_key)
