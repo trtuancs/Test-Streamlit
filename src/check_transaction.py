@@ -79,11 +79,11 @@ def preprocessing(file: pd.io.excel._base.ExcelFile)-> pd.DataFrame:
         df5 = df4
         print(payment_type,' missed.')
     
-    df5 = df5[cols_lst]
+    df5 = df5.loc[:,cols_lst]
     return df5
 
 def save_csv_local(dataframe: pd.DataFrame,month_key):
-    dataframe.to_csv(f"data_check_transaction_{month_key}.csv",index = False, header=True)
+    dataframe.to_csv(f"file/data_check_transaction_{month_key}.csv",index = False, header=True)
 
 def delete_old_data(conn):
     cur = conn.cursor()
@@ -93,7 +93,7 @@ def delete_old_data(conn):
 def insert_data(conn,month_key):
     # insert data den doi soat
     cur = conn.cursor()
-    with open(f"data_check_transaction_{month_key}.csv", 'r') as f:
+    with open(f"file/data_check_transaction_{month_key}.csv", 'r') as f:
         reader = csv.reader(f)
         next(reader) # Skip the header row.
         cur.copy_from(f,"hd1report_db.data_congthanhtoan", columns = ('month_key','payment_type','ma_giao_dich','ngay_giao_dich','merchant_ref','status'), sep=",")
