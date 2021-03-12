@@ -16,7 +16,7 @@ if option == 1:
     st.info("You are using Check Transaction Function")
     month_key = st.text_input("Enter month_key")
     file_input = st.file_uploader("Upload File Transaction", type=['xlsx'])
-    if (file_input is not None) and (month_key is not None):
+    if (file_input is not None) and (month_key != ""):
         if st.button('Begin checking'):
             with st.spinner("We are checking month_key: {} ...".format(month_key)):
                 config = Config('Staging').get_config()
