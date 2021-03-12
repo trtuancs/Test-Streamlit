@@ -2,13 +2,19 @@ from create_download import *
 from check_transaction import *
 from config import *
 
+CHOICES = {1: "Check Transaction", 2: "Check VMG"}
+
+
+def format_func(option):
+    return CHOICES[option]
+
 
 @st.cache(suppress_st_warning=True)
 def main():
     st.title('Welcome to CHECK TOOL')
     option = st.selectbox("Please select your option: ",
-                          ['Check Transaction', 'Check VMG'])
-    if option == 'Check Transaction':
+                          options=list(CHOICES.keys()), format_func=format_func)
+    if option == 1:
         st.info("You are using Check Transaction Function")
         month_key = st.text_input("Enter month_key")
         file_input = st.file_uploader("Upload File Transaction", type=['xlsx'])
@@ -31,7 +37,7 @@ def main():
                     st.success("Processing is success - Click below link to download: ")
                     st.markdown(not_pay_gate_link, unsafe_allow_html=True)
                     st.markdown(not_glx_link, unsafe_allow_html=True)
-    elif option == 'Check VMG':
+    elif option == 2:
         st.header("This function are maintenance")
 
 
