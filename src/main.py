@@ -21,7 +21,7 @@ if option == 'Check Transaction':
             Check = CheckTransactionProcessor(conn, month_key)
             not_pay_gate = Check.check_not_pay_gate()
             not_glx = Check.check_not_glx()
-            st.info("Click below link to download: ")
+            st.success("Processing is success - Click below link to download: ")
             not_pay_gate_link = CreateDownload(not_pay_gate, "not_in_pay_gate", "Transaction not in payment gate").process()
             not_glx_link = CreateDownload(not_glx, "not_in_glx", "Transaction not in Galaxy").process()
             st.markdown(not_pay_gate_link, unsafe_allow_html=True)
