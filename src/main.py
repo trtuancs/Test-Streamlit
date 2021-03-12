@@ -32,7 +32,7 @@ def main():
                     st.markdown(not_pay_gate_link, unsafe_allow_html=True)
                     st.markdown(not_glx_link, unsafe_allow_html=True)
     elif option == 'Check VMG':
-        st.info("This function are maintenance")
+        st.header("This function are maintenance")
 
 
 if __name__ == "__main__":
