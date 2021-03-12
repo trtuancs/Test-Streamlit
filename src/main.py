@@ -35,5 +35,4 @@ def main():
         st.header("This function are maintenance")
 
 
-if __name__ == "__main__":
-    main()
+main()
